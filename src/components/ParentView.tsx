@@ -24,6 +24,9 @@ export default function ParentView() {
   
   const [newRewardName, setNewRewardName] = useState('');
   const [newRewardDiamond, setNewRewardDiamond] = useState('10');
+  const [newRewardIcon, setNewRewardIcon] = useState('🎁');
+
+  const rewardIcons = ['🎁', '🎮', '🧸', '🍬', '🍦', '🚗', '📚', '🎨', '🎫', '🚲', '🍔', '🎡'];
 
   useEffect(() => {
     generateQuestion();
@@ -219,32 +222,48 @@ export default function ParentView() {
             {/* Add Reward */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
               <h3 className="font-bold text-slate-700 mb-3 text-sm">添加新愿望</h3>
-              <div className="flex gap-2">
-                <input 
-                  type="text" 
-                  placeholder="愿望名称 (如: 去游乐园)"
-                  value={newRewardName}
-                  onChange={(e) => setNewRewardName(e.target.value)}
-                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
-                />
-                <input 
-                  type="number" 
-                  placeholder="钻石"
-                  value={newRewardDiamond}
-                  onChange={(e) => setNewRewardDiamond(e.target.value)}
-                  className="w-20 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
-                />
-                <button 
-                  onClick={() => {
-                    if (newRewardName && newRewardDiamond) {
-                      addReward({ name: newRewardName, diamondCost: parseInt(newRewardDiamond) });
-                      setNewRewardName('');
-                    }
-                  }}
-                  className="bg-indigo-500 text-white p-2 rounded-xl hover:bg-indigo-600"
-                >
-                  <Plus size={20} />
-                </button>
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+                  {rewardIcons.map(icon => (
+                    <button
+                      key={icon}
+                      onClick={() => setNewRewardIcon(icon)}
+                      className={cn(
+                        "text-2xl p-2 rounded-xl border-2 transition-all flex-shrink-0",
+                        newRewardIcon === icon ? "border-indigo-500 bg-indigo-50 scale-110" : "border-transparent hover:bg-slate-50"
+                      )}
+                    >
+                      {icon}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    placeholder="愿望名称 (如: 去游乐园)"
+                    value={newRewardName}
+                    onChange={(e) => setNewRewardName(e.target.value)}
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                  />
+                  <input 
+                    type="number" 
+                    placeholder="钻石"
+                    value={newRewardDiamond}
+                    onChange={(e) => setNewRewardDiamond(e.target.value)}
+                    className="w-20 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                  />
+                  <button 
+                    onClick={() => {
+                      if (newRewardName && newRewardDiamond) {
+                        addReward({ name: newRewardName, diamondCost: parseInt(newRewardDiamond), icon: newRewardIcon });
+                        setNewRewardName('');
+                      }
+                    }}
+                    className="bg-indigo-500 text-white p-2 rounded-xl hover:bg-indigo-600 flex-shrink-0"
+                  >
+                    <Plus size={20} />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -252,6 +271,7 @@ export default function ParentView() {
             <div className="space-y-3">
               {rewards.map(reward => (
                 <div key={reward.id} className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                  <div className="text-3xl mr-3">{reward.icon || '🎁'}</div>
                   <div className="flex-1 pr-2">
                     <div className="font-bold text-slate-700">{reward.name}</div>
                     <div className="text-xs text-blue-600 font-bold mt-1">💎 {reward.diamondCost} 钻石</div>

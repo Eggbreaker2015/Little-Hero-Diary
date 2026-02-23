@@ -30,10 +30,12 @@ export default function ShopView() {
               "bg-white border-cyan-200 hover:border-cyan-300 hover:-translate-y-1 hover:shadow-md"
             )}
           >
-            <div className="text-5xl mb-3 drop-shadow-sm">🎁</div>
-            <h3 className="font-black text-slate-800 text-base mb-3 line-clamp-2 h-12 flex items-center justify-center">
-              {reward.name}
-            </h3>
+            <div className="text-5xl mb-3 drop-shadow-sm">{reward.icon || '🎁'}</div>
+            <div className="h-12 mb-3 flex items-center justify-center w-full px-1">
+              <h3 className="font-black text-slate-800 text-base line-clamp-2">
+                {reward.name}
+              </h3>
+            </div>
             
             {reward.isRedeemed ? (
               <div className="w-full py-2 rounded-2xl font-black text-sm bg-slate-200 text-slate-500 border-2 border-slate-300">

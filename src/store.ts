@@ -15,6 +15,7 @@ export type Reward = {
   diamondCost: number;
   isRedeemed: boolean;
   isPending: boolean;
+  icon?: string;
 };
 
 export type GameState = {

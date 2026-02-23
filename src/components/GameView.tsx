@@ -246,7 +246,7 @@ export default function GameView() {
 
         {/* HP Bar */}
         {!isDefeated && (
-          <div className="absolute bottom-12 w-3/4 max-w-xs h-6 bg-slate-200 rounded-full overflow-hidden shadow-inner border-2 border-white">
+          <div className="absolute top-16 w-3/4 max-w-xs h-6 bg-slate-200 rounded-full overflow-hidden shadow-inner border-2 border-white">
             <motion.div 
               className={cn(
                 "h-full transition-all duration-200",
