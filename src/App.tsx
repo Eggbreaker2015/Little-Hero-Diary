@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Gamepad2, CheckSquare, Store, Settings } from 'lucide-react';
 import GameView from './components/GameView';
 import TaskView from './components/TaskView';

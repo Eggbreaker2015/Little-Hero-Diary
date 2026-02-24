@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store';
 import { STAGES } from '../lib/gameData';
 import { cn } from '../lib/utils';
@@ -190,9 +190,13 @@ export default function GameView() {
               >
                 {monsterData.emoji}
               </motion.div>
-              <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap font-black text-slate-800 bg-white/90 px-4 py-2 rounded-2xl shadow-sm border-2 border-slate-200">
+              <motion.div 
+                animate={{ y: [0, -5, 0] }}
+                transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut", delay: 0.5 }}
+                className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap font-black text-slate-800 bg-white/90 px-4 py-2 rounded-2xl shadow-sm border-2 border-slate-200"
+              >
                 {monsterData.name}
-              </div>
+              </motion.div>
             </motion.div>
           )}
           
@@ -246,7 +250,7 @@ export default function GameView() {
 
         {/* HP Bar */}
         {!isDefeated && (
-          <div className="absolute top-16 w-3/4 max-w-xs h-6 bg-slate-200 rounded-full overflow-hidden shadow-inner border-2 border-white">
+          <div className="absolute top-6 w-3/4 max-w-xs h-6 bg-slate-200 rounded-full overflow-hidden shadow-inner border-2 border-white">
             <motion.div 
               className={cn(
                 "h-full transition-all duration-200",
@@ -259,34 +263,36 @@ export default function GameView() {
             </div>
           </div>
         )}
+
       </div>
 
-      {/* Attacks Left Indicator */}
-      <div className="bg-white p-6 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-10 text-center border-t-4 border-slate-100">
-        <div className="text-slate-500 font-black mb-2 flex items-center justify-center gap-2">
-          <span>⚔️</span> 剩余攻击次数
-        </div>
-        <motion.div 
-          key={attacks}
-          initial={{ scale: 1.5, color: '#ef4444' }}
-          animate={{ scale: 1, color: (attacks || 0) > 0 ? '#ef4444' : '#cbd5e1' }}
-          className={cn(
-            "text-5xl font-black drop-shadow-sm",
-            (attacks || 0) > 0 ? "text-rose-500" : "text-slate-300"
-          )}
-        >
-          {attacks || 0}
-        </motion.div>
-        {(attacks || 0) === 0 && (
+      {/* No Attacks Hint - Moved to bottom above nav bar */}
+      {attacks <= 0 && !isDefeated && (
+        <div className="px-6 pb-4 z-30">
           <motion.div 
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-sm font-bold text-emerald-500 mt-3 bg-emerald-50 py-2 px-4 rounded-2xl border-2 border-emerald-100 inline-block"
+            className="bg-white/95 backdrop-blur-sm py-3 px-5 rounded-3xl border-4 border-rose-100 shadow-xl flex items-center justify-between gap-4"
           >
-            去完成任务获取攻击次数吧！
+            <div className="flex items-center gap-3">
+              <div className="bg-rose-100 p-2 rounded-2xl">
+                <span className="text-2xl">⚔️</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-rose-600 font-black text-base leading-tight">没力气啦！</span>
+                <span className="text-emerald-600 font-bold text-xs leading-tight">快去完成任务获取攻击次数吧</span>
+              </div>
+            </div>
+            <motion.div 
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="bg-rose-500 text-white font-black text-sm px-4 py-2 rounded-2xl shadow-sm"
+            >
+              0
+            </motion.div>
           </motion.div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

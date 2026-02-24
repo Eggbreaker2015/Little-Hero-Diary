@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../store';
 import { cn } from '../lib/utils';
 import { sfx } from '../lib/sounds';
