@@ -4,6 +4,7 @@ import { cn } from '../lib/utils';
 import { sfx } from '../lib/sounds';
 import { Lock, Unlock, Plus, Trash2, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { motion } from 'motion/react';
 
 export default function ParentView() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -16,7 +17,9 @@ export default function ParentView() {
     approveTask, resetTask, addTask, removeTask,
     approveReward, addReward, removeReward,
     normalMonsterDiamondReward, bossMonsterDiamondReward,
-    setNormalMonsterDiamondReward, setBossMonsterDiamondReward
+    showMonsterEyes,
+    setNormalMonsterDiamondReward, setBossMonsterDiamondReward,
+    setShowMonsterEyes
   } = useGameStore();
 
   const [newTaskName, setNewTaskName] = useState('');
@@ -327,6 +330,28 @@ export default function ParentView() {
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+              <h3 className="font-bold text-slate-700 mb-4">外观设置</h3>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-slate-700">显示怪兽眼睛</div>
+                  <div className="text-xs text-slate-500">为所有怪兽添加可爱的眼睛</div>
+                </div>
+                <button 
+                  onClick={() => setShowMonsterEyes(!showMonsterEyes)}
+                  className={cn(
+                    "w-14 h-8 rounded-full transition-all relative",
+                    showMonsterEyes ? "bg-indigo-500" : "bg-slate-300"
+                  )}
+                >
+                  <motion.div 
+                    animate={{ x: showMonsterEyes ? 24 : 4 }}
+                    className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-sm"
+                  />
+                </button>
               </div>
             </div>
           </div>

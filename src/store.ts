@@ -28,6 +28,7 @@ export type GameState = {
   rewards: Reward[];
   normalMonsterDiamondReward: number;
   bossMonsterDiamondReward: number;
+  showMonsterEyes: boolean;
   
   // Actions
   addAttacks: (amount: number) => void;
@@ -38,6 +39,7 @@ export type GameState = {
   setMonsterHp: (hp: number) => void;
   setNormalMonsterDiamondReward: (amount: number) => void;
   setBossMonsterDiamondReward: (amount: number) => void;
+  setShowMonsterEyes: (show: boolean) => void;
   
   // Parent Actions
   addTask: (task: Omit<Task, 'id' | 'isCompleted'>) => void;
@@ -76,6 +78,7 @@ export const useGameStore = create<GameState>()(
       rewards: INITIAL_REWARDS,
       normalMonsterDiamondReward: 1,
       bossMonsterDiamondReward: 5,
+      showMonsterEyes: true,
 
       addAttacks: (amount) => set((state) => ({ attacks: (state.attacks || 0) + amount })),
       
@@ -103,6 +106,7 @@ export const useGameStore = create<GameState>()(
       
       setNormalMonsterDiamondReward: (amount) => set({ normalMonsterDiamondReward: amount }),
       setBossMonsterDiamondReward: (amount) => set({ bossMonsterDiamondReward: amount }),
+      setShowMonsterEyes: (show) => set({ showMonsterEyes: show }),
 
       nextMonster: () => set((state) => {
         let nextIndex = state.currentMonsterIndex + 1;

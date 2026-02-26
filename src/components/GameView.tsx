@@ -10,7 +10,8 @@ export default function GameView() {
   const { 
     attacks, diamonds, currentStage, currentMonsterIndex, 
     currentMonsterHp, nextMonster, addDiamonds, useAttack, setMonsterHp,
-    normalMonsterDiamondReward, bossMonsterDiamondReward
+    normalMonsterDiamondReward, bossMonsterDiamondReward,
+    showMonsterEyes
   } = useGameStore();
 
   const stage = STAGES[currentStage % STAGES.length];
@@ -189,6 +190,24 @@ export default function GameView() {
                 )}
               >
                 {monsterData.emoji}
+                
+                {/* Monster Eyes Overlay */}
+                {showMonsterEyes && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="flex gap-4 mb-4">
+                      <motion.div 
+                        animate={{ scaleY: [1, 0.1, 1] }}
+                        transition={{ repeat: Infinity, duration: 3, times: [0, 0.1, 0.2] }}
+                        className="w-3 h-3 bg-black rounded-full border-2 border-white shadow-sm"
+                      />
+                      <motion.div 
+                        animate={{ scaleY: [1, 0.1, 1] }}
+                        transition={{ repeat: Infinity, duration: 3, times: [0, 0.1, 0.2] }}
+                        className="w-3 h-3 bg-black rounded-full border-2 border-white shadow-sm"
+                      />
+                    </div>
+                  </div>
+                )}
               </motion.div>
               <motion.div 
                 animate={{ y: [0, -5, 0] }}
