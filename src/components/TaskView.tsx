@@ -32,19 +32,22 @@ export default function TaskView() {
           >
             <div className="flex items-center gap-4">
               {task.isCompleted ? (
-                <CheckCircle2 className="text-emerald-500" size={36} />
+                <CheckCircle2 className="text-emerald-500 flex-shrink-0" size={36} />
               ) : (
-                <Circle className="text-slate-300" size={36} />
+                <Circle className="text-slate-300 flex-shrink-0" size={36} />
               )}
-              <div>
-                <h3 className={cn(
-                  "font-black text-xl mb-1",
-                  task.isCompleted ? "text-slate-500 line-through" : "text-slate-800"
-                )}>
-                  {task.name}
-                </h3>
-                <div className="bg-rose-100 text-rose-600 font-black text-sm inline-flex items-center gap-1 px-3 py-1 rounded-full border-2 border-rose-200">
-                  <span>⚔️</span> +{task.attackReward ?? task.coinReward ?? 10} 攻击
+              <div className="flex items-center gap-3">
+                {task.icon && <div className="text-3xl">{task.icon}</div>}
+                <div>
+                  <h3 className={cn(
+                    "font-black text-xl mb-1",
+                    task.isCompleted ? "text-slate-500 line-through" : "text-slate-800"
+                  )}>
+                    {task.name}
+                  </h3>
+                  <div className="bg-rose-100 text-rose-600 font-black text-sm inline-flex items-center gap-1 px-3 py-1 rounded-full border-2 border-rose-200">
+                    <span>⚔️</span> +{task.attackReward ?? task.coinReward ?? 10} 攻击
+                  </div>
                 </div>
               </div>
             </div>

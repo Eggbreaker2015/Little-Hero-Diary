@@ -7,6 +7,7 @@ export type Task = {
   attackReward?: number;
   coinReward?: number;
   isCompleted: boolean;
+  icon?: string;
 };
 
 export type Reward = {
@@ -44,20 +45,22 @@ export type GameState = {
   // Parent Actions
   addTask: (task: Omit<Task, 'id' | 'isCompleted'>) => void;
   removeTask: (id: string) => void;
+  updateTask: (id: string, updates: Partial<Omit<Task, 'id' | 'isCompleted'>>) => void;
   approveTask: (id: string) => void;
   resetTask: (id: string) => void;
   
   addReward: (reward: Omit<Reward, 'id' | 'isRedeemed' | 'isPending'>) => void;
   removeReward: (id: string) => void;
+  updateReward: (id: string, updates: Partial<Omit<Reward, 'id' | 'isRedeemed' | 'isPending'>>) => void;
   requestReward: (id: string) => void;
   approveReward: (id: string) => void;
 };
 
 const INITIAL_TASKS: Task[] = [
-  { id: '1', name: '按时刷牙', attackReward: 50, isCompleted: false },
-  { id: '2', name: '自己穿衣', attackReward: 30, isCompleted: false },
-  { id: '3', name: '收拾玩具', attackReward: 40, isCompleted: false },
-  { id: '4', name: '光盘行动', attackReward: 50, isCompleted: false },
+  { id: '1', name: '按时刷牙', attackReward: 50, isCompleted: false, icon: '🦷' },
+  { id: '2', name: '自己穿衣', attackReward: 30, isCompleted: false, icon: '👕' },
+  { id: '3', name: '收拾玩具', attackReward: 40, isCompleted: false, icon: '🧸' },
+  { id: '4', name: '光盘行动', attackReward: 50, isCompleted: false, icon: '🍽️' },
 ];
 
 const INITIAL_REWARDS: Reward[] = [
@@ -128,6 +131,10 @@ export const useGameStore = create<GameState>()(
         tasks: state.tasks.filter(t => t.id !== id)
       })),
 
+      updateTask: (id, updates) => set((state) => ({
+        tasks: state.tasks.map(t => t.id === id ? { ...t, ...updates } : t)
+      })),
+
       approveTask: (id) => set((state) => {
         const task = state.tasks.find(t => t.id === id);
         if (task && !task.isCompleted) {
@@ -150,6 +157,10 @@ export const useGameStore = create<GameState>()(
 
       removeReward: (id) => set((state) => ({
         rewards: state.rewards.filter(r => r.id !== id)
+      })),
+
+      updateReward: (id, updates) => set((state) => ({
+        rewards: state.rewards.map(r => r.id === id ? { ...r, ...updates } : r)
       })),
 
       requestReward: (id) => {

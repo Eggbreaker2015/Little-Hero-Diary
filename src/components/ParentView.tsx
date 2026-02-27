@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useGameStore } from '../store';
 import { cn } from '../lib/utils';
 import { sfx } from '../lib/sounds';
-import { Lock, Unlock, Plus, Trash2, Check } from 'lucide-react';
+import { Lock, Unlock, Plus, Trash2, Check, Edit2, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
 
@@ -14,8 +14,8 @@ export default function ParentView() {
 
   const { 
     tasks, rewards, 
-    approveTask, resetTask, addTask, removeTask,
-    approveReward, addReward, removeReward,
+    approveTask, resetTask, addTask, removeTask, updateTask,
+    approveReward, addReward, removeReward, updateReward,
     normalMonsterDiamondReward, bossMonsterDiamondReward,
     showMonsterEyes,
     setNormalMonsterDiamondReward, setBossMonsterDiamondReward,
@@ -24,12 +24,24 @@ export default function ParentView() {
 
   const [newTaskName, setNewTaskName] = useState('');
   const [newTaskAttack, setNewTaskAttack] = useState('50');
+  const [newTaskIcon, setNewTaskIcon] = useState('📝');
   
   const [newRewardName, setNewRewardName] = useState('');
   const [newRewardDiamond, setNewRewardDiamond] = useState('10');
   const [newRewardIcon, setNewRewardIcon] = useState('🎁');
 
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editingTaskName, setEditingTaskName] = useState('');
+  const [editingTaskAttack, setEditingTaskAttack] = useState('');
+  const [editingTaskIcon, setEditingTaskIcon] = useState('');
+
+  const [editingRewardId, setEditingRewardId] = useState<string | null>(null);
+  const [editingRewardName, setEditingRewardName] = useState('');
+  const [editingRewardDiamond, setEditingRewardDiamond] = useState('');
+  const [editingRewardIcon, setEditingRewardIcon] = useState('');
+
   const rewardIcons = ['🎁', '🎮', '🧸', '🍬', '🍦', '🚗', '📚', '🎨', '🎫', '🚲', '🍔', '🎡'];
+  const taskIcons = ['📝', '🧹', '🛏️', '🦷', '📚', '🏃‍♂️', '🍽️', '👕', '🗑️', '🐶', '🚿', '🍎'];
 
   useEffect(() => {
     generateQuestion();
@@ -154,66 +166,152 @@ export default function ParentView() {
             {/* Add Task */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
               <h3 className="font-bold text-slate-700 mb-3 text-sm">添加新任务</h3>
-              <div className="flex gap-2">
-                <input 
-                  type="text" 
-                  placeholder="任务名称 (如: 扫地)"
-                  value={newTaskName}
-                  onChange={(e) => setNewTaskName(e.target.value)}
-                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
-                />
-                <input 
-                  type="number" 
-                  placeholder="攻击次数"
-                  value={newTaskAttack}
-                  onChange={(e) => setNewTaskAttack(e.target.value)}
-                  className="w-24 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
-                />
-                <button 
-                  onClick={() => {
-                    if (newTaskName && newTaskAttack) {
-                      addTask({ name: newTaskName, attackReward: parseInt(newTaskAttack) });
-                      setNewTaskName('');
-                    }
-                  }}
-                  className="bg-indigo-500 text-white p-2 rounded-xl hover:bg-indigo-600"
-                >
-                  <Plus size={20} />
-                </button>
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+                  {taskIcons.map(icon => (
+                    <button
+                      key={icon}
+                      onClick={() => setNewTaskIcon(icon)}
+                      className={cn(
+                        "text-2xl p-2 rounded-xl border-2 transition-all flex-shrink-0",
+                        newTaskIcon === icon ? "border-indigo-500 bg-indigo-50 scale-110" : "border-transparent hover:bg-slate-50"
+                      )}
+                    >
+                      {icon}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    placeholder="任务名称 (如: 扫地)"
+                    value={newTaskName}
+                    onChange={(e) => setNewTaskName(e.target.value)}
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                  />
+                  <input 
+                    type="number" 
+                    placeholder="攻击次数"
+                    value={newTaskAttack}
+                    onChange={(e) => setNewTaskAttack(e.target.value)}
+                    className="w-24 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                  />
+                  <button 
+                    onClick={() => {
+                      if (newTaskName && newTaskAttack) {
+                        addTask({ name: newTaskName, attackReward: parseInt(newTaskAttack), icon: newTaskIcon });
+                        setNewTaskName('');
+                      }
+                    }}
+                    className="bg-indigo-500 text-white p-2 rounded-xl hover:bg-indigo-600 flex-shrink-0"
+                  >
+                    <Plus size={20} />
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Task List */}
             <div className="space-y-3">
               {tasks.map(task => (
-                <div key={task.id} className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                  <div>
-                    <div className="font-bold text-slate-700">{task.name}</div>
-                    <div className="text-xs text-red-600 font-bold mt-1">⚔️ {task.attackReward ?? task.coinReward ?? 10} 次攻击</div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {!task.isCompleted ? (
-                      <button 
-                        onClick={() => handleApproveTask(task.id)}
-                        className="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 hover:bg-green-200"
-                      >
-                        <Check size={16} /> 确认完成
-                      </button>
-                    ) : (
-                      <button 
-                        onClick={() => resetTask(task.id)}
-                        className="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-slate-200"
-                      >
-                        重置
-                      </button>
-                    )}
-                    <button 
-                      onClick={() => removeTask(task.id)}
-                      className="text-red-400 p-1.5 hover:bg-red-50 rounded-lg"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+                <div key={task.id} className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
+                  {editingTaskId === task.id ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+                        {taskIcons.map(icon => (
+                          <button
+                            key={icon}
+                            onClick={() => setEditingTaskIcon(icon)}
+                            className={cn(
+                              "text-2xl p-2 rounded-xl border-2 transition-all flex-shrink-0",
+                              editingTaskIcon === icon ? "border-indigo-500 bg-indigo-50 scale-110" : "border-transparent hover:bg-slate-50"
+                            )}
+                          >
+                            {icon}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          value={editingTaskName}
+                          onChange={(e) => setEditingTaskName(e.target.value)}
+                          className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                        />
+                        <input 
+                          type="number" 
+                          value={editingTaskAttack}
+                          onChange={(e) => setEditingTaskAttack(e.target.value)}
+                          className="w-20 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                        />
+                        <button 
+                          onClick={() => {
+                            if (editingTaskName && editingTaskAttack) {
+                              updateTask(task.id, { 
+                                name: editingTaskName, 
+                                attackReward: parseInt(editingTaskAttack),
+                                icon: editingTaskIcon
+                              });
+                              setEditingTaskId(null);
+                            }
+                          }}
+                          className="bg-green-500 text-white p-2 rounded-xl hover:bg-green-600 flex-shrink-0"
+                        >
+                          <Check size={20} />
+                        </button>
+                        <button 
+                          onClick={() => setEditingTaskId(null)}
+                          className="bg-slate-200 text-slate-600 p-2 rounded-xl hover:bg-slate-300 flex-shrink-0"
+                        >
+                          <X size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="text-3xl">{task.icon || '📝'}</div>
+                        <div>
+                          <div className="font-bold text-slate-700">{task.name}</div>
+                          <div className="text-xs text-red-600 font-bold mt-1">⚔️ {task.attackReward ?? task.coinReward ?? 10} 次攻击</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {!task.isCompleted ? (
+                          <button 
+                            onClick={() => handleApproveTask(task.id)}
+                            className="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 hover:bg-green-200"
+                          >
+                            <Check size={16} /> 确认完成
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={() => resetTask(task.id)}
+                            className="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-slate-200"
+                          >
+                            重置
+                          </button>
+                        )}
+                        <button 
+                          onClick={() => {
+                            setEditingTaskId(task.id);
+                            setEditingTaskName(task.name);
+                            setEditingTaskAttack((task.attackReward ?? task.coinReward ?? 10).toString());
+                            setEditingTaskIcon(task.icon || '📝');
+                          }}
+                          className="text-indigo-400 p-1.5 hover:bg-indigo-50 rounded-lg"
+                        >
+                          <Edit2 size={18} />
+                        </button>
+                        <button 
+                          onClick={() => removeTask(task.id)}
+                          className="text-red-400 p-1.5 hover:bg-red-50 rounded-lg"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -273,32 +371,99 @@ export default function ParentView() {
             {/* Reward List */}
             <div className="space-y-3">
               {rewards.map(reward => (
-                <div key={reward.id} className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                  <div className="text-3xl mr-3">{reward.icon || '🎁'}</div>
-                  <div className="flex-1 pr-2">
-                    <div className="font-bold text-slate-700">{reward.name}</div>
-                    <div className="text-xs text-blue-600 font-bold mt-1">💎 {reward.diamondCost} 钻石</div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {reward.isPending ? (
-                      <button 
-                        onClick={() => handleApproveReward(reward.id)}
-                        className="bg-orange-100 text-orange-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 hover:bg-orange-200 animate-pulse"
-                      >
-                        <Check size={16} /> 确认兑现
-                      </button>
-                    ) : reward.isRedeemed ? (
-                      <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md">已兑现</span>
-                    ) : (
-                      <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md">未申请</span>
-                    )}
-                    <button 
-                      onClick={() => removeReward(reward.id)}
-                      className="text-red-400 p-1.5 hover:bg-red-50 rounded-lg"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+                <div key={reward.id} className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
+                  {editingRewardId === reward.id ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+                        {rewardIcons.map(icon => (
+                          <button
+                            key={icon}
+                            onClick={() => setEditingRewardIcon(icon)}
+                            className={cn(
+                              "text-2xl p-2 rounded-xl border-2 transition-all flex-shrink-0",
+                              editingRewardIcon === icon ? "border-indigo-500 bg-indigo-50 scale-110" : "border-transparent hover:bg-slate-50"
+                            )}
+                          >
+                            {icon}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          value={editingRewardName}
+                          onChange={(e) => setEditingRewardName(e.target.value)}
+                          className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                        />
+                        <input 
+                          type="number" 
+                          value={editingRewardDiamond}
+                          onChange={(e) => setEditingRewardDiamond(e.target.value)}
+                          className="w-20 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                        />
+                        <button 
+                          onClick={() => {
+                            if (editingRewardName && editingRewardDiamond) {
+                              updateReward(reward.id, { 
+                                name: editingRewardName, 
+                                diamondCost: parseInt(editingRewardDiamond),
+                                icon: editingRewardIcon
+                              });
+                              setEditingRewardId(null);
+                            }
+                          }}
+                          className="bg-green-500 text-white p-2 rounded-xl hover:bg-green-600 flex-shrink-0"
+                        >
+                          <Check size={20} />
+                        </button>
+                        <button 
+                          onClick={() => setEditingRewardId(null)}
+                          className="bg-slate-200 text-slate-600 p-2 rounded-xl hover:bg-slate-300 flex-shrink-0"
+                        >
+                          <X size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <div className="text-3xl mr-3">{reward.icon || '🎁'}</div>
+                      <div className="flex-1 pr-2">
+                        <div className="font-bold text-slate-700">{reward.name}</div>
+                        <div className="text-xs text-blue-600 font-bold mt-1">💎 {reward.diamondCost} 钻石</div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {reward.isPending ? (
+                          <button 
+                            onClick={() => handleApproveReward(reward.id)}
+                            className="bg-orange-100 text-orange-700 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 hover:bg-orange-200 animate-pulse"
+                          >
+                            <Check size={16} /> 确认兑现
+                          </button>
+                        ) : reward.isRedeemed ? (
+                          <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md">已兑现</span>
+                        ) : (
+                          <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md">未申请</span>
+                        )}
+                        <button 
+                          onClick={() => {
+                            setEditingRewardId(reward.id);
+                            setEditingRewardName(reward.name);
+                            setEditingRewardDiamond(reward.diamondCost.toString());
+                            setEditingRewardIcon(reward.icon || '🎁');
+                          }}
+                          className="text-indigo-400 p-1.5 hover:bg-indigo-50 rounded-lg"
+                        >
+                          <Edit2 size={18} />
+                        </button>
+                        <button 
+                          onClick={() => removeReward(reward.id)}
+                          className="text-red-400 p-1.5 hover:bg-red-50 rounded-lg"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
