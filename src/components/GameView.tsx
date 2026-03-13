@@ -5,6 +5,7 @@ import { cn } from '../lib/utils';
 import { sfx } from '../lib/sounds';
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'motion/react';
+import MonsterAccessories from './MonsterAccessories';
 
 export default function GameView() {
   const { 
@@ -185,28 +186,15 @@ export default function GameView() {
                 animate={{ y: [0, -10, 0] }}
                 transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
                 className={cn(
-                  "flex items-center justify-center drop-shadow-2xl select-none",
+                  "flex items-center justify-center drop-shadow-2xl select-none relative",
                   isBoss ? "text-[150px]" : "text-[120px]"
                 )}
               >
                 {monsterData.emoji}
                 
-                {/* Monster Eyes Overlay */}
+                {/* Monster Accessories Overlay */}
                 {showMonsterEyes && (
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="flex gap-4 mb-4">
-                      <motion.div 
-                        animate={{ scaleY: [1, 0.1, 1] }}
-                        transition={{ repeat: Infinity, duration: 3, times: [0, 0.1, 0.2] }}
-                        className="w-3 h-3 bg-black rounded-full border-2 border-white shadow-sm"
-                      />
-                      <motion.div 
-                        animate={{ scaleY: [1, 0.1, 1] }}
-                        transition={{ repeat: Infinity, duration: 3, times: [0, 0.1, 0.2] }}
-                        className="w-3 h-3 bg-black rounded-full border-2 border-white shadow-sm"
-                      />
-                    </div>
-                  </div>
+                  <MonsterAccessories seed={currentStage * 100 + currentMonsterIndex} />
                 )}
               </motion.div>
               <motion.div 
