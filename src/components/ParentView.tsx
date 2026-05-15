@@ -15,7 +15,7 @@ export default function ParentView() {
   const { 
     tasks, rewards, 
     approveTask, resetTask, addTask, removeTask, updateTask,
-    approveReward, addReward, removeReward, updateReward,
+    approveReward, addReward, removeReward, updateReward, resetReward,
     normalMonsterDiamondReward, bossMonsterDiamondReward,
     showMonsterEyes,
     setNormalMonsterDiamondReward, setBossMonsterDiamondReward,
@@ -440,7 +440,12 @@ export default function ParentView() {
                             <Check size={16} /> 确认兑现
                           </button>
                         ) : reward.isRedeemed ? (
-                          <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md">已兑现</span>
+                          <button 
+                            onClick={() => resetReward(reward.id)}
+                            className="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-slate-200"
+                          >
+                            重置
+                          </button>
                         ) : (
                           <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md">未申请</span>
                         )}

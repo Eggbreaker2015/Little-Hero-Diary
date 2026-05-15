@@ -19,9 +19,9 @@ export default function GameView() {
   const monsterData = currentMonsterIndex === 5 ? stage.boss : stage.monsters[currentMonsterIndex];
   const isBoss = currentMonsterIndex === 5;
 
-  // Calculate scaled HP based on stage loops
+  // Calculate fixed HP (1.5x base HP) without scaling by stage loops
   const stageLoop = Math.floor(currentStage / STAGES.length);
-  const hpMultiplier = Math.pow(1.5, stageLoop);
+  const hpMultiplier = 1.5;
   const maxHp = Math.floor(monsterData.hpBase * hpMultiplier);
 
   // Ensure currentMonsterHp doesn't exceed maxHp (happens when we lower base HP in code but state is persisted)

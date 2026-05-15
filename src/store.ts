@@ -54,6 +54,7 @@ export type GameState = {
   updateReward: (id: string, updates: Partial<Omit<Reward, 'id' | 'isRedeemed' | 'isPending'>>) => void;
   requestReward: (id: string) => void;
   approveReward: (id: string) => void;
+  resetReward: (id: string) => void;
 };
 
 const INITIAL_TASKS: Task[] = [
@@ -175,6 +176,10 @@ export const useGameStore = create<GameState>()(
 
       approveReward: (id) => set((state) => ({
         rewards: state.rewards.map(r => r.id === id ? { ...r, isPending: false, isRedeemed: true } : r)
+      })),
+
+      resetReward: (id) => set((state) => ({
+        rewards: state.rewards.map(r => r.id === id ? { ...r, isPending: false, isRedeemed: false } : r)
       })),
     }),
     {
